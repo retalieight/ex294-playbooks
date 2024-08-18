@@ -1,0 +1,11 @@
+---
+- name: Set users password
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Set password for user bob
+      ansible.builtin.user:
+        user: bob
+        update_password: always
+        password: "{{ newpassword|password_hash('sha512') }}"

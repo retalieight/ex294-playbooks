@@ -1,0 +1,53 @@
+---
+- name: Block test
+  hosts: all
+  become: true
+  gather_facts: true
+  tasks:
+    - block:
+        - name: Create users
+          user:
+            name: "{{ item }}"
+            state: present
+          loop:
+            - bob
+            - sally
+      when: inventory_hostname in groups['servers']
+      tags: ['Create users']
+
+    - block:
+        - name: Remove users
+          user:
+            name: tom
+            state: absent
+      when: inventory_hostname in groups['servers']
+      tags: ['Remove users']
+
+    - block:
+        - name: Install httpd
+          dnf:
+            name: httpd
+            state: present
+      rescue:
+        - debug:
+            msg: Trying to fix package install
+        - name: Remove httpd
+          dnf:
+            name: httpd
+            state: absent
+        - debug:
+            msg: This will not be printed
+      always:
+        - debug:
+            msg: Do some other stuff
+      tags: ['Install packages']
+      when: ansible_os_family == 'RedHat'
+
+    - debug:
+        msg: Print something
+
+    - name: Install telnet
+      dnf:
+        name: telnet
+        state: present
+      tags: ['Install packages']

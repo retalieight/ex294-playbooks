@@ -1,0 +1,41 @@
+---
+- name: Create users
+  hosts: all
+  become: true
+  gather_facts: false
+  vars_files:
+    - vars/users.yml
+    - secret.yml
+  vars:
+    hash_regular: "{{ user_password | password_hash('sha512') }}"
+    hash_database: "{{ database_password | password_hash('sha512') }}"
+
+  tasks:
+    - name: Print regular user password
+      debug:
+        msg: "Regular user password is {{ user_password }}, hash is {{ hash_regular }}"
+    - name: Print database user password
+      debug:
+        msg: "Database user password is {{ database_password }}, hash is {{ hash_database }}"
+
+    - name: Add the user {{ item.username }} with a specific uid and primary group of wheel
+      user:
+        name: "{{ item.username }}"
+        password: "{{ user_password | password_hash('sha512') if item.uid < 3000 else database_password | password_hash('sha512') }}"
+        uid: "{{ item.uid }}"
+        group: wheel
+        shell: /bin/bash
+      loop: "{{ users }}"
+      when:
+        ( item.uid < 3000 and inventory_hostname in groups['servers'] ) or
+        ( item.uid >= 3000 and inventory_hostname in groups['db_servers'] )
+
+    - name: Add automation ssh key to users
+      authorized_key:
+        user: "{{ item.username }}"
+        state: present
+        key: "{{ lookup('file', '/home/automation/.ssh/id_rsa.pub') }}"
+      loop: "{{ users }}"
+      when:
+        ( item.uid < 3000 and inventory_hostname in groups['servers'] ) or
+        ( item.uid >= 3000 and inventory_hostname in groups['db_servers'] )

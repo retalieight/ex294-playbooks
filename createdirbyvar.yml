@@ -1,0 +1,13 @@
+---
+- name: Create directory using variable
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    dir: test1
+
+  tasks:
+    - name: Create directory {{ dir }}
+      ansible.builtin.file:
+        path: "/tmp/{{ dir }}"
+        state: directory

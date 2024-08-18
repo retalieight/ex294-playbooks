@@ -1,0 +1,32 @@
+---
+- name: Create and remove file
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Create a directory
+      ansible.builtin.file:
+        path: /tmp/newdir
+        owner: nobody
+        group: nobody
+        mode: 0770
+        state: directory
+
+    - name: Create a file in the directory
+      ansible.builtin.file:
+        path: /tmp/newdir/somefile
+        state: touch
+
+    - name: Stat the new file
+      ansible.builtin.stat:
+        path: /tmp/newdir/somefile
+      register: filestat
+
+    - name: Show stat of file
+      ansible.builtin.debug:
+        msg: File stat of /tmp/newdir/somefile {{ filestat }}
+
+    - name: Remove file
+      ansible.builtin.file:
+        path: /tmp/newdir/somefile
+        state: absent

@@ -1,0 +1,25 @@
+---
+- name: Install packages and start services
+  hosts: all
+  gather_facts: false
+  become: true
+
+  tasks:
+    - name: Install httpd
+      ansible.builtin.dnf:
+        name: httpd
+        state: present
+      tags: ['Apache']
+
+    - name: Start and enable httpd
+      ansible.builtin.service:
+        name: httpd
+        state: started
+        enabled: true
+      tags: ['Apache']
+
+    - name: Install telnet
+      ansible.builtin.dnf:
+        name: telnet
+        state: present
+      tags: ['Telnet']

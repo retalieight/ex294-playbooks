@@ -1,0 +1,12 @@
+---
+- name: Create users
+  hosts: all
+  become: true
+  vars:
+    users: [jerry,bill,mary]
+
+  tasks:
+    - name: Create user
+      ansible.builtin.user:
+        name: "{{ item }}"
+      with_items: "{{ users }}"

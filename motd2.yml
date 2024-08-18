@@ -1,0 +1,14 @@
+---
+- name: Configure MOTD
+  hosts: all
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Configure MOTD
+      copy:
+        content: "{{ motd }}\n"
+        dest: /etc/motd
+        owner: root
+        group: root
+        mode: 0644

@@ -1,0 +1,12 @@
+---
+- name: Change file permissions
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Change permissions of file /tmp/linux2
+      ansible.builtin.file:
+        path: /tmp/linux2
+        mode: 0400
+        owner: nobody
+        group: nobody

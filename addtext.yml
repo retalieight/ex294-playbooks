@@ -1,0 +1,17 @@
+---
+- name: Create file and add text
+  hosts: localhost
+  become: true
+
+  tasks:
+    - name: Create file
+      ansible.builtin.file:
+        path: /tmp/somestuff
+        state: touch
+
+    - name: Add text to file
+      ansible.builtin.blockinfile:
+        path: /tmp/somestuff
+        block: |
+          This is some text I want added
+          to this new file. Kthxbai.

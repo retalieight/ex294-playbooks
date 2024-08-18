@@ -1,0 +1,12 @@
+---
+- name: Change motd on hosts
+  hosts: all
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Copy the content to web servers
+      copy:
+        content: "Welcome to Apache server\n"
+        dest: /etc/motd
+      when: "inventory_hostname in groups['webservers']"

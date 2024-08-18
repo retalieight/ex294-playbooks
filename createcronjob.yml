@@ -1,0 +1,17 @@
+---
+- name: Create a cronjob
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Create cronjob
+      ansible.builtin.cron:
+        name: Run logger and print a message
+        user: root
+        job: logger "Hello World from cron"
+        day: "*"
+        month: "*"
+        weekday: "*"
+        hour: "0"
+        minute: "40"
+        state: present

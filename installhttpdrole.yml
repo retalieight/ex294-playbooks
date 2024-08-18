@@ -1,0 +1,7 @@
+---
+- name: Install httpd
+  hosts: all
+  gather_facts: false
+  become: true
+  roles:
+    - httpd

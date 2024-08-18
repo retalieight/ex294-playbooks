@@ -1,0 +1,9 @@
+---
+- name: Run shell script
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Run script createfile.sh
+      ansible.builtin.shell:
+        cmd: /root/createfile.sh

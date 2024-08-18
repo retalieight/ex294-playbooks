@@ -1,0 +1,15 @@
+---
+- name: Install and start Apache
+  hosts: localhost
+
+  tasks:
+    - name: Install httpd (Apache)
+      ansible.builtin.dnf:
+        name: httpd
+        state: present
+
+    - name: Start and enable httpd (Apache)
+      ansible.builtin.service:
+        name: httpd
+        state: started
+        enabled: true

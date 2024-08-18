@@ -1,0 +1,32 @@
+---
+- name: Install httpd and open port in firewalld
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Install httpd
+      ansible.builtin.dnf:
+        name: httpd
+        state: present
+
+    - name: Start httpd
+      ansible.builtin.service:
+        name: httpd
+        state: started
+
+    - name: Open http and https in firewalld
+      ansible.posix.firewalld:
+        service: "{{ item }}"
+        permanent: true
+        state: enabled
+      loop:
+        - http
+        - https
+      notify:
+        - Reload firewalld
+
+  handlers:
+    - name: Reload firewalld
+      ansible.builtin.service:
+        name: firewalld
+        state: reloaded

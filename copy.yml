@@ -1,0 +1,11 @@
+---
+- name: Copy file from local to remote
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Copy file /root/some.cfg
+      ansible.builtin.copy:
+        src: /root/some.cfg
+        dest: /tmp
+        mode: 0600

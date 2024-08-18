@@ -1,0 +1,21 @@
+---
+- name: Create a directory and download Tomcat
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Create /opt/tomcat directory
+      ansible.builtin.file:
+        path: /opt/tomcat
+        state: directory
+        mode: 0755
+        owner: root
+        group: root
+
+    - name: Download Tomcat
+      ansible.builtin.get_url:
+        url: https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.93/bin/apache-tomcat-9.0.93.tar.gz
+        dest: /opt/tomcat
+        mode: 0644
+        owner: nobody
+        group: nobody

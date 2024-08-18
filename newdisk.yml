@@ -1,0 +1,33 @@
+---
+- name: Create and mount new disk
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Create partition on new disk
+      community.general.parted:
+        device: /dev/nvme0n2
+        name: files
+        number: 1
+        label: gpt
+        part_start: "0%"
+        part_end: "100%"
+        state: present
+
+    - name: Create filesystem on new partition
+      community.general.filesystem:
+        dev: /dev/nvme0n2p1
+        fstype: xfs
+        state: present
+
+    - name: Create a mount point
+      ansible.builtin.file:
+        path: /data
+        state: directory
+
+    - name: Mount the new filesystem
+      ansible.posix.mount:
+        src: /dev/nvme0n2p1
+        path: /data
+        fstype: xfs
+        state: mounted

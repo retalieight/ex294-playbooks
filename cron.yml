@@ -1,0 +1,14 @@
+---
+- name: Create a cronjob
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Create a cronjob to run date
+      cron:
+        name: run date
+        minute: "0"
+        hour: "*"
+        user: root
+        job: "/usr/bin/date >> /var/log/time.log"
+      when: inventory_hostname in groups['servers']

@@ -1,0 +1,14 @@
+---
+- name: Check file status
+  hosts: localhost
+  become: true
+
+  tasks:
+    - name: Check status of file and attributes
+      ansible.builtin.stat:
+        path: /etc/hosts
+      register: fs
+
+    - name: Result
+      ansible.builtin.debug:
+        msg: File attributes {{ fs.stat.mode }}

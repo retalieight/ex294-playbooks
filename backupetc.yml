@@ -1,0 +1,51 @@
+---
+- name: Backup /etc
+  hosts: localhost
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Create backup directory
+      file:
+        path: /backup
+        state: directory
+        owner: automation
+        group: automation
+        mode: 0755
+
+
+- name: Archive /etc
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Create directory for backups on nodes
+      file:
+        path: /backup
+        state: directory
+        owner: automation
+        group: automation
+        mode: 0755
+
+    - name: Create archive of /etc
+      archive:
+        path: /etc
+        dest: /backup/configuration.gz
+        format: gz
+        owner: automation
+        group: automation
+        mode: 0660
+
+- name: Fetch the archive
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Retrieves archive from nodes
+      fetch:
+        src: /backup/configuration.gz
+        dest: /backup/{{ inventory_hostname }}-configuration
+        owner: automation
+        group: automation
+        mode: 0660
+

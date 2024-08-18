@@ -1,0 +1,41 @@
+---
+- name: Create new partition
+  hosts: all
+  become: true
+  gather_facts: true
+  tasks:
+    - block:
+        - name: Create a new partition
+          parted:
+            device: /dev/nvme0n3
+            number: 1
+            state: present
+            part_end: 1500MiB
+        - name: Create an xfs filesystem
+          filesystem:
+            fstype: xfs
+            dev: /dev/nvme0n3p1
+        - name: Create /data2 directory
+          file:
+            path: /data2
+            state: directory
+        - name: Mount new partition to /data2
+          mount:
+            path: /data2
+            src: /dev/nvme0n3p1
+            fstype: xfs
+            state: mounted
+          when: inventory_hostname in groups['servers']
+      rescue:
+       - debug:
+           msg: Could not create partition of that size
+       - name: Create a new primary partition
+         parted:
+           device: /dev/nvme0n3
+           number: 1
+           state: present
+           part_end: 800MiB
+         when: ansible_devices.nvme0n3 is defined
+    - debug:
+        msg: The disk nvme0n3 does not exist
+      when: ansible_devices.nvme0n3 is not defined

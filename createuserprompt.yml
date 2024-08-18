@@ -1,0 +1,22 @@
+---
+- name: Create new user
+  hosts: all
+  become: true
+  gather_facts: false
+  vars_prompt:
+    - name: username
+      prompt: What is the username?
+      private: false
+    - name: password
+      prompt: What is the password?
+      private: true
+      confirm: true
+      salt_size: 2
+      encrypt: sha512_crypt
+
+  tasks:
+    - name: Create new user
+      user:
+        name: "{{ username }}"
+        password: "{{ password }}"
+        state: present

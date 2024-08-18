@@ -1,0 +1,21 @@
+---
+- name: Kill process
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Get process
+      ansible.builtin.shell:
+        cmd: "ps fauxww | grep to[p] | awk '{print $2}'"
+      ignore_errors: true
+      register: process
+
+    - name: Print process
+      ansible.builtin.debug:
+        msg: "{{ process.stdout_lines }}"
+
+    - name: Kill process
+      ansible.builtin.shell:
+        cmd: "kill {{ item }}"
+      ignore_errors: true
+      with_items: "{{ process.stdout_lines }}"

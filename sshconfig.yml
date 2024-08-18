@@ -1,0 +1,28 @@
+---
+- name: Configure SSH
+  hosts: all
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Change MaxAuthTries
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: "^#MaxAuthTries 6"
+        line: "MaxAuthTries 3"
+      notify:
+        - Restart SSH
+
+    - name: Disable X11Forwarding
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: "^#X11Forwarding no"
+        line: "X11Forwarding no"
+      notify:
+        - Restart SSH
+
+  handlers:
+    - name: Restart SSH
+      service:
+        name: sshd
+        state: restarted
